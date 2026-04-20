@@ -1,26 +1,86 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6efe6;
+  --foreground: #2f241d;
+  --card: rgba(255, 252, 247, 0.82);
+  --card-strong: #fffdf9;
+  --muted: #756457;
+  --border: rgba(117, 100, 87, 0.16);
+  --accent: #c97550;
+  --accent-strong: #ae5d3e;
+  --accent-soft: #f6dfcf;
+  --success-soft: #dce9df;
+  --danger-soft: #f1d9d6;
+  --mixed-soft: #ede3cf;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-strong: var(--card-strong);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-success-soft: var(--success-soft);
+  --color-danger-soft: var(--danger-soft);
+  --color-mixed-soft: var(--mixed-soft);
+  --font-sans: "Avenir Next", "PingFang SC", "Hiragino Sans GB", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.85), transparent 36%),
+    linear-gradient(180deg, #fbf6ef 0%, #f6efe6 52%, #f1e8dc 100%);
 }
 
 body {
-  background: var(--background);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.78), transparent 28%),
+    linear-gradient(180deg, rgba(255, 248, 240, 0.9) 0%, rgba(246, 239, 230, 0.92) 55%, rgba(240, 231, 219, 0.95) 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", sans-serif;
+}
+
+a,
+button,
+input,
+textarea {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+input,
+textarea {
+  outline: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(117, 100, 87, 0.72);
+}
+
+::selection {
+  background: rgba(201, 117, 80, 0.18);
 }

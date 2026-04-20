@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+diary-data
+certs
+.env*
+*.pem
+*.key
+*.csr
+*.srl

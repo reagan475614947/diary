@@ -1,0 +1,16 @@
+services:
+  diary-app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - SESSION_SECRET=${SESSION_SECRET}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+    volumes:
+      - diary-data:/app/diary-data
+    restart: unless-stopped
+
+volumes:
+  diary-data:
