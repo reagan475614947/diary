@@ -13,10 +13,13 @@
 ## 工作流
 
 ```
-本地修改 → git push → GitHub Actions（构建镜像 + 推送 ghcr.io + SSH 部署）
+本地修改 → git push（不会触发部署）→ 需要部署时手动触发：
+  gh workflow run "Build and Deploy"
 ```
 
-`git push` 到 `main` 后自动触发 [.github/workflows/deploy.yml](.github/workflows/deploy.yml)，约 3 分钟完成全流程。**不要在 Droplet 上直接构建**——1GB RAM 跑 `npm run build` 会 OOM 卡死整个系统。
+部署是**纯手动**触发的（`workflow_dispatch`，不绑 push），通过 [.github/workflows/deploy.yml](.github/workflows/deploy.yml)。约 3 分钟完成"GitHub Actions 构建镜像 → 推 ghcr.io → SSH 部署"。
+
+**不要在 Droplet 上直接构建**——1GB RAM 跑 `npm run build` 会 OOM 卡死整个系统。
 
 ## SSH 访问
 
@@ -44,7 +47,7 @@ gh run list --limit 5
 # 看部署日志
 gh run view <run-id> --log
 
-# 手动触发部署（不改代码也能触发）
+# 手动触发部署（这是唯一的触发方式）
 gh workflow run "Build and Deploy"
 
 # 看服务器上容器状态

@@ -102,18 +102,13 @@ export function HomeDashboard({
           return;
         }
 
-        const position = await Promise.race([
-          new Promise<GeolocationPosition>((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
-              enableHighAccuracy: false,
-              timeout: 8000,
-              maximumAge: 10 * 60 * 1000,
-            });
-          }),
-          new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error("geolocation timeout")), 5000),
-          ),
-        ]);
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: false,
+            timeout: 15000,
+            maximumAge: 10 * 60 * 1000,
+          });
+        });
 
         const response = await fetch(
           `/api/weather/current?lat=${position.coords.latitude}&lon=${position.coords.longitude}`,
@@ -122,9 +117,24 @@ export function HomeDashboard({
 
         if (!response.ok) throw new Error(result.error ?? "获取失败");
 
-        setWeather({ summary: result.summary ?? "", status: "done" });
-      } catch {
-        setWeather({ summary: "", status: "error" });
+        const summary = result.summary ?? "";
+        if (!summary) {
+          setWeather({ summary: "未识别到天气", status: "error" });
+          return;
+        }
+
+        setWeather({ summary, status: "done" });
+      } catch (error) {
+        let message = "获取失败";
+        if (error && typeof error === "object" && "code" in error) {
+          const code = (error as GeolocationPositionError).code;
+          if (code === 1) message = "未授权定位";
+          else if (code === 2) message = "定位不可用";
+          else if (code === 3) message = "定位超时";
+        } else if (error instanceof Error && error.message) {
+          message = error.message;
+        }
+        setWeather({ summary: message, status: "error" });
       }
     }
 
@@ -227,10 +237,10 @@ export function HomeDashboard({
               <p className="mt-2 text-sm text-muted">等待浏览器启动后获取</p>
             ) : weather.status === "loading" ? (
               <p className="mt-2 text-sm text-muted">正在定位...</p>
-            ) : weather.summary ? (
-              <p className="mt-2 text-base font-semibold text-foreground">{weather.summary}</p>
+            ) : weather.status === "error" ? (
+              <p className="mt-2 text-sm text-muted">{weather.summary || "——"}</p>
             ) : (
-              <p className="mt-2 text-sm text-muted">——</p>
+              <p className="mt-2 text-base font-semibold text-foreground">{weather.summary}</p>
             )}
           </div>
 
