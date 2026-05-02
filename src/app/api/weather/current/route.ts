@@ -3,9 +3,22 @@ import { NextResponse } from "next/server";
 type NominatimResult = {
   address?: {
     state?: string;
+    region?: string;
+    province?: string;
+    county?: string;
     city?: string;
+    town?: string;
+    village?: string;
+    municipality?: string;
+    suburb?: string;
+    country?: string;
   };
 };
+
+function pickPrimaryName(value: string | undefined): string {
+  if (!value) return "";
+  return value.split(/[;；]/)[0].trim();
+}
 
 type ForecastResult = {
   current?: {
@@ -60,11 +73,23 @@ async function reverseGeocode(latitude: string, longitude: string) {
     }
 
     const data = (await response.json()) as NominatimResult;
-    return (
-      data.address?.state ??
-      data.address?.city ??
-      ""
+    const address = data.address ?? {};
+    const primary = pickPrimaryName(
+      address.city ??
+        address.town ??
+        address.village ??
+        address.municipality ??
+        address.suburb ??
+        address.county ??
+        address.state ??
+        address.region ??
+        address.province,
     );
+    const country = pickPrimaryName(address.country);
+    if (primary && country && primary !== country) {
+      return `${country} · ${primary}`;
+    }
+    return primary || country;
   } catch {
     return "";
   }
